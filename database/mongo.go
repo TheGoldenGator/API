@@ -94,8 +94,15 @@ func CreateStream() ([]twitch.Streamer, error) {
 }
 
 // Fetches all streams stored in "streams" collection.
-func GetStreams() ([]twitch.PublicStream, error) {
-	cursor, err := Stream.Find(context.Background(), bson.M{})
+func GetStreams(status string) ([]twitch.PublicStream, error) {
+	var toSearch bson.M
+	if status == "online" || status == "offline" {
+		toSearch = bson.M{"status": status}
+	} else {
+		toSearch = bson.M{}
+	}
+
+	cursor, err := Stream.Find(context.Background(), toSearch)
 	if err != nil {
 		return nil, err
 	}

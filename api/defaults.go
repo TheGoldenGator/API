@@ -43,12 +43,21 @@ func (a *App) Home(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} twitch.PublicStream
 // @Router /streams [get]
 func (a *App) Streams(w http.ResponseWriter, r *http.Request) {
-	streams, err := database.GetStreams()
-	if err != nil {
-		RespondWithError(w, r, http.StatusBadRequest, err.Error())
-	}
+	statusP := r.URL.Query().Get("status")
 
-	RespondWithJSON(w, r, http.StatusOK, streams)
+	if statusP == "online" || statusP == "offline" {
+		streams, err := database.GetStreams(statusP)
+		if err != nil {
+			RespondWithError(w, r, http.StatusBadRequest, err.Error())
+		}
+		RespondWithJSON(w, r, http.StatusOK, streams)
+	} else {
+		streams, err := database.GetStreams("all")
+		if err != nil {
+			RespondWithError(w, r, http.StatusBadRequest, err.Error())
+		}
+		RespondWithJSON(w, r, http.StatusOK, streams)
+	}
 }
 
 // Fetches all streamers
