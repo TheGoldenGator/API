@@ -2,7 +2,11 @@ module github.com/Mahcks/TheGoldenGator
 
 go 1.17
 
-require github.com/go-redis/redis/v8 v8.11.5
+require (
+	github.com/go-redis/redis/v8 v8.11.5
+	github.com/swaggo/http-swagger v1.2.8
+	github.com/swaggo/swag v1.8.1
+)
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
@@ -24,8 +28,6 @@ require (
 	github.com/russross/blackfriday/v2 v2.0.1 // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2 // indirect
-	github.com/swaggo/http-swagger v1.2.8 // indirect
-	github.com/swaggo/swag v1.8.1 // indirect
 	github.com/urfave/cli/v2 v2.3.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.0.2 // indirect
@@ -52,7 +54,7 @@ require (
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/spf13/viper v1.11.0 // indirect
+	github.com/spf13/viper v1.11.0
 	github.com/subosito/gotenv v1.2.0 // indirect
 	go.mongodb.org/mongo-driver v1.9.1
 	golang.org/x/sys v0.0.0-20220503163025-988cb79eb6c6 // indirect
