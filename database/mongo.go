@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/Mahcks/golden-gator-api/twitch"
+	"github.com/Mahcks/TheGoldenGator/twitch"
 	"go.mongodb.org/mongo-driver/bson"
 )
 

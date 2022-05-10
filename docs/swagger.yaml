@@ -1,0 +1,120 @@
+basePath: /
+definitions:
+  api.Url:
+    properties:
+      description:
+        type: string
+      url:
+        type: string
+    type: object
+  twitch.PublicStream:
+    properties:
+      status:
+        example: online
+        type: string
+      stream_game_id:
+        example: ""
+        type: string
+      stream_game_name:
+        example: Gartic Phone
+        type: string
+      stream_id:
+        example: "46365071629"
+        type: string
+      stream_thumbnail_url:
+        example: https://static-cdn.jtvnw.net/previews-ttv/live_user_roflgator-{width}x{height}.jpg
+        type: string
+      stream_title:
+        example: GARLIC PHONE WITH THE MOST POGGERS ARTISTS, SPECIAL GUEST RUBBERROSS,
+          OBAMA AND YOUR MOM!
+        type: string
+      stream_viewer_count:
+        example: 4590
+        type: integer
+      user_display_name:
+        example: roflgator
+        type: string
+      user_id:
+        example: 11897156
+        type: integer
+      user_login:
+        example: roflgator
+        type: string
+      user_profile_image_url:
+        example: https://static-cdn.jtvnw.net/jtv_user_pictures/f40e0bfe-f376-49b1-ad08-7b63f866dabb-profile_image-300x300.png
+        type: string
+    type: object
+  twitch.Streamer:
+    properties:
+      display_name:
+        example: roflgator
+        type: string
+      id:
+        example: 11897156
+        type: integer
+      login:
+        example: roflgator
+        type: string
+      profile_image_url:
+        example: https://static-cdn.jtvnw.net/jtv_user_pictures/2e24ced1-fec5-4cd8-858f-130f798fa023-profile_image-600x600.png
+        type: string
+    type: object
+info:
+  contact:
+    email: mahcks@protonmail.com
+    name: API Support
+  description: Documentation for the public REST API.
+  license:
+    name: Apache
+    url: https://insertthislater.com
+  termsOfService: http://swagger.io/terms/
+  title: TheGoldenGator API
+  version: 0.0.3
+paths:
+  /:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api.Url'
+            type: array
+      summary: Returns list of avilable endpoints along with a description.
+      tags:
+      - Default
+  /streams:
+    get:
+      description: Using this endpoint, you'll be able to get all stored data about
+        their stream and streamer.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/twitch.PublicStream'
+            type: array
+      summary: Returns list of all Golden Gator streamers that are online and offline.
+      tags:
+      - Default
+  /users:
+    get:
+      description: Using this endpoint, you'll be able to get all stored data about
+        a streamer.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/twitch.Streamer'
+            type: array
+      summary: Returns list of all Golden Gator streamers.
+      tags:
+      - Default
+swagger: "2.0"

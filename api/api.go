@@ -8,10 +8,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/Mahcks/golden-gator-api/configure"
-	"github.com/Mahcks/golden-gator-api/middleware"
+	"github.com/Mahcks/TheGoldenGator/configure"
+
+	"github.com/Mahcks/TheGoldenGator/middleware"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 type App struct {
@@ -100,5 +102,6 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/streams", a.Streams).Methods("GET")
 	a.Router.HandleFunc("/users", a.Users).Methods("GET")
 	a.Router.HandleFunc("/eventsub", a.EventsubRecievedNotification).Methods("POST")
+	a.Router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 	a.Router.HandleFunc("/test", a.Test).Methods("GET")
 }

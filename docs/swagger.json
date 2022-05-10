@@ -1,0 +1,171 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Documentation for the public REST API.",
+        "title": "TheGoldenGator API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "email": "mahcks@protonmail.com"
+        },
+        "license": {
+            "name": "Apache",
+            "url": "https://insertthislater.com"
+        },
+        "version": "0.0.3"
+    },
+    "basePath": "/",
+    "paths": {
+        "/": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Default"
+                ],
+                "summary": "Returns list of avilable endpoints along with a description.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/api.Url"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/streams": {
+            "get": {
+                "description": "Using this endpoint, you'll be able to get all stored data about their stream and streamer.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Default"
+                ],
+                "summary": "Returns list of all Golden Gator streamers that are online and offline.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/twitch.PublicStream"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "description": "Using this endpoint, you'll be able to get all stored data about a streamer.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Default"
+                ],
+                "summary": "Returns list of all Golden Gator streamers.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/twitch.Streamer"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.Url": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "twitch.PublicStream": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "example": "online"
+                },
+                "stream_game_id": {
+                    "type": "string",
+                    "example": ""
+                },
+                "stream_game_name": {
+                    "type": "string",
+                    "example": "Gartic Phone"
+                },
+                "stream_id": {
+                    "type": "string",
+                    "example": "46365071629"
+                },
+                "stream_thumbnail_url": {
+                    "type": "string",
+                    "example": "https://static-cdn.jtvnw.net/previews-ttv/live_user_roflgator-{width}x{height}.jpg"
+                },
+                "stream_title": {
+                    "type": "string",
+                    "example": "GARLIC PHONE WITH THE MOST POGGERS ARTISTS, SPECIAL GUEST RUBBERROSS, OBAMA AND YOUR MOM!"
+                },
+                "stream_viewer_count": {
+                    "type": "integer",
+                    "example": 4590
+                },
+                "user_display_name": {
+                    "type": "string",
+                    "example": "roflgator"
+                },
+                "user_id": {
+                    "type": "integer",
+                    "example": 11897156
+                },
+                "user_login": {
+                    "type": "string",
+                    "example": "roflgator"
+                },
+                "user_profile_image_url": {
+                    "type": "string",
+                    "example": "https://static-cdn.jtvnw.net/jtv_user_pictures/f40e0bfe-f376-49b1-ad08-7b63f866dabb-profile_image-300x300.png"
+                }
+            }
+        },
+        "twitch.Streamer": {
+            "type": "object",
+            "properties": {
+                "display_name": {
+                    "type": "string",
+                    "example": "roflgator"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 11897156
+                },
+                "login": {
+                    "type": "string",
+                    "example": "roflgator"
+                },
+                "profile_image_url": {
+                    "type": "string",
+                    "example": "https://static-cdn.jtvnw.net/jtv_user_pictures/2e24ced1-fec5-4cd8-858f-130f798fa023-profile_image-600x600.png"
+                }
+            }
+        }
+    }
+}

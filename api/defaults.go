@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/Mahcks/golden-gator-api/database"
+	"github.com/Mahcks/TheGoldenGator/database"
 )
 
 type Url struct {
@@ -12,6 +12,12 @@ type Url struct {
 }
 
 // Default home route
+// URLs godoc
+// @Summary Returns list of avilable endpoints along with a description.
+// @Tags Default
+// @Produce json
+// @Success 200 {array} Url
+// @Router / [get]
 func (a *App) Home(w http.ResponseWriter, r *http.Request) {
 	urls :=
 		[]Url{
@@ -28,6 +34,14 @@ func (a *App) Home(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, r, http.StatusOK, urls)
 }
 
+// Fetches all streams that are stored.
+// URLs godoc
+// @Summary Returns list of all Golden Gator streamers that are online and offline.
+// @Description Using this endpoint, you'll be able to get all stored data about their stream and streamer.
+// @Tags Default
+// @Produce json
+// @Success 200 {array} twitch.PublicStream
+// @Router /streams [get]
 func (a *App) Streams(w http.ResponseWriter, r *http.Request) {
 	streams, err := database.GetStreams()
 	if err != nil {
@@ -37,6 +51,14 @@ func (a *App) Streams(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, r, http.StatusOK, streams)
 }
 
+// Fetches all streamers
+// URLs godoc
+// @Summary Returns list of all Golden Gator streamers.
+// @Description Using this endpoint, you'll be able to get all stored data about a streamer.
+// @Tags Default
+// @Produce json
+// @Success 200 {array} twitch.Streamer
+// @Router /users [get]
 func (a *App) Users(w http.ResponseWriter, r *http.Request) {
 	users, err := database.GetUsers()
 	if err != nil {

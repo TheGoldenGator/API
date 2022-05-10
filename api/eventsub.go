@@ -11,9 +11,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Mahcks/golden-gator-api/configure"
-	"github.com/Mahcks/golden-gator-api/database"
-	"github.com/Mahcks/golden-gator-api/twitch"
+	"github.com/Mahcks/TheGoldenGator/configure"
+	"github.com/Mahcks/TheGoldenGator/database"
+	"github.com/Mahcks/TheGoldenGator/twitch"
 )
 
 // Verify message from EventSub

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Mahcks/golden-gator-api/configure"
+	"github.com/Mahcks/TheGoldenGator/configure"
 )
 
 // HTTP client to make requests
