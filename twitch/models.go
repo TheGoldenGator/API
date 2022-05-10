@@ -27,6 +27,12 @@ type Streamer struct {
 	Login           string `json:"login" bson:"login" example:"roflgator"`
 	DisplayName     string `json:"display_name" bson:"display_name" example:"roflgator"`
 	ProfileImageUrl string `json:"profile_image_url" bson:"profile_image_url" example:"https://static-cdn.jtvnw.net/jtv_user_pictures/2e24ced1-fec5-4cd8-858f-130f798fa023-profile_image-600x600.png"`
+	TwitchURL       string `json:"twitch" bson:"twitch" example:"https://www.twitch.tv/roflgator"`
+	RedditURL       string `json:"reddit" bson:"reddit" example:""`
+	TwitterURL      string `json:"twitter" bson:"twitter" example:"https://twitter.com/roflgatorow"`
+	DiscordURL      string `json:"discord" bson:"discord" example:""`
+	YouTubeURL      string `json:"youtube" bson:"youtube" example:"https://www.youtube.com/channel/UCrIz-xXkVr0PSUdY4e7p-8w"`
+	TikTokURL       string `json:"tiktok" bson:"tiktok" example:""`
 }
 
 type PublicStream struct {

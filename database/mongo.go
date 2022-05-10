@@ -2,8 +2,11 @@ package database
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"sort"
 	"strconv"
+	"time"
 
 	"github.com/Mahcks/TheGoldenGator/twitch"
 	"go.mongodb.org/mongo-driver/bson"
@@ -93,6 +96,19 @@ func CreateStream() ([]twitch.Streamer, error) {
 	return streamers, nil
 }
 
+// Lowest view count -> highest
+/* func lowestViewerCount(streams []twitch.PublicStream) []twitch.PublicStream {
+	sort.Slice(streams, func(i, j int) bool {
+		if streams[i].StreamViewerCount < streams[j].StreamViewerCount {
+			return true
+		}
+		if streams[i].StreamViewerCount > streams[j].StreamViewerCount {
+			return false
+		}
+		return streams[i].StreamViewerCount < streams[j].StreamViewerCount
+	})
+} */
+
 // Fetches all streams stored in "streams" collection.
 func GetStreams(status string) ([]twitch.PublicStream, error) {
 	var toSearch bson.M
@@ -112,22 +128,61 @@ func GetStreams(status string) ([]twitch.PublicStream, error) {
 		return nil, err
 	}
 
+	// Sorts based on viewer count
+	sort.Slice(streams, func(i, j int) bool {
+		if streams[i].StreamViewerCount < streams[j].StreamViewerCount {
+			return false
+		}
+		if streams[i].StreamViewerCount > streams[j].StreamViewerCount {
+			return true
+		}
+		return streams[i].StreamViewerCount < streams[j].StreamViewerCount
+	})
+
 	return streams, nil
 }
 
 // Fetches all streamers that are watched for.
 func GetUsers() ([]twitch.Streamer, error) {
-	cursor, err := Users.Find(context.Background(), bson.M{})
+	key := "tgg:users"
+	cached, err := CheckCache(context.Background(), key)
 	if err != nil {
 		return nil, err
 	}
 
-	var users []twitch.Streamer
-	if err = cursor.All(context.Background(), &users); err != nil {
-		return nil, err
-	}
+	if cached {
+		cached, ok := GetCache(context.Background(), key)
 
-	return users, nil
+		if ok && cached != "" {
+			var cS []twitch.Streamer
+			json.Unmarshal([]byte(cached), &cS)
+			return cS, nil
+		}
+		return nil, err
+	} else {
+		cursor, err := Users.Find(context.Background(), bson.M{})
+		if err != nil {
+			return nil, err
+		}
+
+		var users []twitch.Streamer
+		if err = cursor.All(context.Background(), &users); err != nil {
+			return nil, err
+		}
+
+		// Cache
+		toCache, err := json.Marshal(users)
+		if err != nil {
+			return nil, err
+		}
+
+		errCache := SetCache(context.Background(), key, string(toCache), 10*time.Minute)
+		if errCache != nil {
+			return nil, err
+		}
+
+		return users, nil
+	}
 }
 
 // Changes MongoDB status for streamer to offline.
