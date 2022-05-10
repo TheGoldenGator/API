@@ -5,7 +5,7 @@ WORKDIR $GOPATH/src/github.com/TheGoldenGator/API
 
 COPY go.mod ./
 COPY go.sum ./
-RUN go mod Download
+RUN go mod download
 
 COPY *.go ./
 
