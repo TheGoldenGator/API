@@ -13,4 +13,4 @@ RUN go build -o /API
 
 EXPOSE 8080
 
-CMD ["API"]
+CMD ["api"]
