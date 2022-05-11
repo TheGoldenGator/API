@@ -13,6 +13,8 @@ RUN go get github.com/go-redis/redis
 # Compile the binary EXE for our app.
 RUN go build -o main .
 
+EXPOSE 8080
+
 # Start it
 CMD [ "./main" ]
 
