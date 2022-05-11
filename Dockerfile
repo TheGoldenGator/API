@@ -7,8 +7,6 @@ WORKDIR /go/src/github.com/redis_docker
 # Copy everything from this project into the filesystem of the container.
 COPY . .
 
-COPY ./config.yaml /go/src/github.com/redis_docker/
-
 # Obtain package needed to run redis commands.
 RUN go get github.com/go-redis/redis
 
