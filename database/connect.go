@@ -41,7 +41,7 @@ func Connect(mongoURI string) error {
 	// Redis Connection
 	RDB = redis.NewClient(&redis.Options{
 		Addr:     "redis:6379",
-		Password: "mypassword",
+		Password: "",
 		DB:       0,
 	})
 
