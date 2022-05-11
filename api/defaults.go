@@ -44,15 +44,16 @@ func (a *App) Home(w http.ResponseWriter, r *http.Request) {
 // @Router /streams [get]
 func (a *App) Streams(w http.ResponseWriter, r *http.Request) {
 	statusP := r.URL.Query().Get("status")
+	sortP := r.URL.Query().Get("sort")
 
 	if statusP == "online" || statusP == "offline" {
-		streams, err := database.GetStreams(statusP)
+		streams, err := database.GetStreams(statusP, sortP)
 		if err != nil {
 			RespondWithError(w, r, http.StatusBadRequest, err.Error())
 		}
 		RespondWithJSON(w, r, http.StatusOK, streams)
 	} else {
-		streams, err := database.GetStreams("all")
+		streams, err := database.GetStreams("all", "all")
 		if err != nil {
 			RespondWithError(w, r, http.StatusBadRequest, err.Error())
 		}

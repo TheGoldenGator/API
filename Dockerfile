@@ -1,16 +1,18 @@
+# Specify base image for Go API
 FROM golang:1.17
 
-# Set CWD inside of container
-WORKDIR $GOPATH/src/github.com/TheGoldenGator/API
+# Specify that we need to execute any commands in directory
+WORKDIR /go/src/github.com/redis_docker
 
-COPY go.mod ./
-COPY go.sum ./
-RUN go mod download
+# Copy everything from this project into the filesystem of the container.
+COPY . .
 
-COPY *.go ./
+# Obtain package needed to run redis commands.
+RUN go get github.com/go-redis/redis
 
-RUN go build -o /API
+# Compile the binary EXE for our app.
+RUN go build -o main .
 
-EXPOSE 8080
+# Start it
+CMD [ "./main" ]
 
-CMD ["api"]

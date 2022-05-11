@@ -104,4 +104,5 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/eventsub", a.EventsubRecievedNotification).Methods("POST")
 	a.Router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 	a.Router.HandleFunc("/test", a.Test).Methods("GET")
+	a.Router.HandleFunc("/teams", a.TeamData).Methods("GET")
 }

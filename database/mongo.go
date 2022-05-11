@@ -68,7 +68,6 @@ func CreateStream() ([]twitch.Streamer, error) {
 						return nil, err
 					}
 					fmt.Printf("No stream document found for %s and they are offline so inserting blank document: %s \n", uInfo.Login, insertRes.InsertedID)
-					return nil, err
 				} else {
 					// Stream online and data found, inserting that data.
 					toInsert := twitch.PublicStream{
@@ -88,7 +87,6 @@ func CreateStream() ([]twitch.Streamer, error) {
 						return nil, err
 					}
 					fmt.Println("NO DOCUMENTS FOUND, INSERTED ONE: ", insertRes.InsertedID)
-					return nil, err
 				}
 			}
 		}
@@ -110,7 +108,7 @@ func CreateStream() ([]twitch.Streamer, error) {
 } */
 
 // Fetches all streams stored in "streams" collection.
-func GetStreams(status string) ([]twitch.PublicStream, error) {
+func GetStreams(status, sorted string) ([]twitch.PublicStream, error) {
 	var toSearch bson.M
 	if status == "online" || status == "offline" {
 		toSearch = bson.M{"status": status}
@@ -129,17 +127,33 @@ func GetStreams(status string) ([]twitch.PublicStream, error) {
 	}
 
 	// Sorts based on viewer count
-	sort.Slice(streams, func(i, j int) bool {
-		if streams[i].StreamViewerCount < streams[j].StreamViewerCount {
-			return false
-		}
-		if streams[i].StreamViewerCount > streams[j].StreamViewerCount {
-			return true
-		}
-		return streams[i].StreamViewerCount < streams[j].StreamViewerCount
-	})
-
-	return streams, nil
+	if sorted == "viewcount_high" {
+		// Sorts by viewcount: high -> low
+		sort.Slice(streams, func(i, j int) bool {
+			if streams[i].StreamViewerCount < streams[j].StreamViewerCount {
+				return false
+			}
+			if streams[i].StreamViewerCount > streams[j].StreamViewerCount {
+				return true
+			}
+			return streams[i].StreamViewerCount < streams[j].StreamViewerCount
+		})
+		return streams, nil
+	} else if sorted == "viewcount_low" {
+		// Sorts by viewcount: low -> high
+		sort.Slice(streams, func(i, j int) bool {
+			if streams[i].StreamViewerCount < streams[j].StreamViewerCount {
+				return true
+			}
+			if streams[i].StreamViewerCount > streams[j].StreamViewerCount {
+				return false
+			}
+			return streams[i].StreamViewerCount < streams[j].StreamViewerCount
+		})
+		return streams, nil
+	} else {
+		return streams, nil
+	}
 }
 
 // Fetches all streamers that are watched for.
@@ -218,5 +232,51 @@ func StreamOnline(event twitch.EventSubStreamOnlineEvent) error {
 	}
 
 	fmt.Printf("Stream went online for %v: %v\n", event.BroadcasterUserLogin, result.ModifiedCount)
+	return nil
+}
+
+// This grabs the Twitch team of The Golden Gator(friendzone) and stores them as members
+func SortTeamMembers() error {
+	tData, err := twitch.GetTeamMembers()
+	if err != nil {
+		return err
+	}
+
+	// Loops over each member in the team
+	t := tData.Data[0]
+	for i := 0; i < len(t.Users); i++ {
+		// Check if the streamer is in members or not yet.
+		id, err := strconv.Atoi(t.Users[i].UserID)
+		if err != nil {
+			return nil
+		}
+
+		var search twitch.Streamer
+		if err := Users.FindOne(context.Background(), bson.M{"id": id}).Decode(&search); err != nil {
+			if err.Error() == "mongo: no documents in result" {
+				// Gets Twitch user data to get the PFP
+				twitchUser, err := twitch.GetTwitchUser(t.Users[i].UserID)
+				if err != nil {
+					return err
+				}
+
+				toI := twitch.Streamer{
+					ID:              id,
+					Login:           t.Users[i].UserLogin,
+					DisplayName:     t.Users[i].UserName,
+					ProfileImageUrl: twitchUser.Users[0].ProfileImageURL,
+					TwitchURL:       fmt.Sprintf("https://www.twitch.tv/%v", t.Users[i].UserLogin),
+					RedditURL:       "",
+					TwitterURL:      "",
+					DiscordURL:      "",
+					YouTubeURL:      "",
+					TikTokURL:       "",
+				}
+
+				Users.InsertOne(context.Background(), toI)
+			}
+		}
+	}
+
 	return nil
 }

@@ -1,0 +1,20 @@
+# 1. Specify the bersion for docker-compose.yaml
+version: "3.8"
+
+# 2. Generate services needed
+services:
+  redis:
+    container_name: "redis"
+    image: redis:alpine
+    command: redis-server /usr/local/etc/redis/redis.conf --requirepass mypassword
+    ports:
+      - "6379:6379"
+    volumes:
+      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+
+  go:
+    container_name: "tgg_api"
+    build:
+      context: .
+    ports:
+      - "8080:8080"
