@@ -31,6 +31,7 @@ func init() {
 	Config.SetConfigFile(Config.GetString("config_file"))
 	Config.SetConfigType("yaml")
 	Config.AddConfigPath("./")
+	Config.AddConfigPath("/go/src/github.com/redis_docker")
 
 	err := Config.ReadInConfig()
 	if err != nil {
