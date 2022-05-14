@@ -29,10 +29,21 @@ type Streamer struct {
 	ProfileImageUrl string `json:"profile_image_url" bson:"profile_image_url" example:"https://static-cdn.jtvnw.net/jtv_user_pictures/2e24ced1-fec5-4cd8-858f-130f798fa023-profile_image-600x600.png"`
 	TwitchURL       string `json:"twitch" bson:"twitch" example:"https://www.twitch.tv/roflgator"`
 	RedditURL       string `json:"reddit" bson:"reddit" example:""`
+	InstagramURL    string `json:"instagram" bson:"instagram" example:""`
 	TwitterURL      string `json:"twitter" bson:"twitter" example:"https://twitter.com/roflgatorow"`
 	DiscordURL      string `json:"discord" bson:"discord" example:""`
 	YouTubeURL      string `json:"youtube" bson:"youtube" example:"https://www.youtube.com/channel/UCrIz-xXkVr0PSUdY4e7p-8w"`
 	TikTokURL       string `json:"tiktok" bson:"tiktok" example:""`
+}
+
+type StreamerURLs struct {
+	TwitchURL    string `json:"twitch" bson:"twitch" example:"https://www.twitch.tv/roflgator"`
+	RedditURL    string `json:"reddit" bson:"reddit" example:""`
+	InstagramURL string `json:"instagram" bson:"instagram" example:""`
+	TwitterURL   string `json:"twitter" bson:"twitter" example:"https://twitter.com/roflgatorow"`
+	DiscordURL   string `json:"discord" bson:"discord" example:""`
+	YouTubeURL   string `json:"youtube" bson:"youtube" example:"https://www.youtube.com/channel/UCrIz-xXkVr0PSUdY4e7p-8w"`
+	TikTokURL    string `json:"tiktok" bson:"tiktok" example:""`
 }
 
 type PublicStream struct {
@@ -47,6 +58,13 @@ type PublicStream struct {
 	StreamGameName      string `json:"stream_game_name" bson:"stream_game_name" example:"Gartic Phone"`
 	StreamViewerCount   int    `json:"stream_viewer_count" bson:"stream_viewer_count" example:"4590"`
 	StreamThumbnailUrl  string `json:"stream_thumbnail_url" bson:"stream_thumbnail_url" example:"https://static-cdn.jtvnw.net/previews-ttv/live_user_roflgator-{width}x{height}.jpg"`
+	TwitchURL           string `json:"twitch" bson:"twitch" example:"https://www.twitch.tv/roflgator"`
+	RedditURL           string `json:"reddit" bson:"reddit" example:""`
+	InstagramURL        string `json:"instagram" bson:"instagram" example:""`
+	TwitterURL          string `json:"twitter" bson:"twitter" example:"https://twitter.com/roflgatorow"`
+	DiscordURL          string `json:"discord" bson:"discord" example:""`
+	YouTubeURL          string `json:"youtube" bson:"youtube" example:"https://www.youtube.com/channel/UCrIz-xXkVr0PSUdY4e7p-8w"`
+	TikTokURL           string `json:"tiktok" bson:"tiktok" example:""`
 }
 
 /* EventSub */

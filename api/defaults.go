@@ -85,6 +85,7 @@ func (a *App) NotFound(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) Test(w http.ResponseWriter, r *http.Request) {
 	data, err := database.CreateStream()
+	//test, err := database.GetStreamerLinks(277057209)
 	if err != nil {
 		RespondWithError(w, r, http.StatusBadRequest, err.Error())
 	}

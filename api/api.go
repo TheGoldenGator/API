@@ -45,7 +45,7 @@ func (a *App) Initialize() {
 func (a *App) Run(addr string) {
 	port := configure.Config.GetString("port")
 	if port == "" {
-		port = "8000"
+		port = "7500"
 	}
 
 	fmt.Println("[INFO] Started running on http://localhost:" + port)

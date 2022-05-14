@@ -39,11 +39,18 @@ func Connect(mongoURI string) error {
 	Users = ggdb.Collection("users")
 
 	// Redis Connection
+	// TODO: Change this when in production
 	RDB = redis.NewClient(&redis.Options{
 		Addr:     "redis:6379",
 		Password: "mypassword",
 		DB:       0,
 	})
+
+	/* RDB = redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	}) */
 
 	pong, err := RDB.Ping(RDB.Context()).Result()
 	if err != nil {
@@ -52,7 +59,7 @@ func Connect(mongoURI string) error {
 	}
 
 	if pong == "PONG" {
-		fmt.Print("[INFO] Connected to Redis")
+		fmt.Print("[INFO] Connected to Redis\n")
 	}
 
 	return err

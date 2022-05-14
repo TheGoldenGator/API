@@ -48,6 +48,11 @@ func CreateStream() ([]twitch.Streamer, error) {
 					return nil, err
 				}
 
+				streamerUrls, err := GetStreamerLinks(uID)
+				if err != nil {
+					return nil, err
+				}
+
 				// No streams found with that streamer which means they are offline.
 				// No way to get their previous stream data so put "N/A" for things that can't be fetched.
 				if len(streamData.Streams) == 0 {
@@ -59,9 +64,17 @@ func CreateStream() ([]twitch.Streamer, error) {
 						UserProfileImageUrl: streamerInfo.Users[0].ProfileImageURL,
 						StreamID:            "N/A",
 						StreamTitle:         "N/A",
+						StreamGameID:        "N/A",
 						StreamGameName:      "N/A",
 						StreamViewerCount:   0,
 						StreamThumbnailUrl:  fmt.Sprintf("https://static-cdn.jtvnw.net/previews-ttv/live_user_%s-{width}x{height}.jpg", uInfo.Login),
+						TwitchURL:           streamerUrls.TwitchURL,
+						RedditURL:           streamerUrls.RedditURL,
+						InstagramURL:        streamerUrls.InstagramURL,
+						TwitterURL:          streamerUrls.TwitterURL,
+						DiscordURL:          streamerUrls.DiscordURL,
+						YouTubeURL:          streamerUrls.YouTubeURL,
+						TikTokURL:           streamerUrls.TikTokURL,
 					}
 					insertRes, err := Stream.InsertOne(context.Background(), toInsert)
 					if err != nil {
@@ -78,9 +91,17 @@ func CreateStream() ([]twitch.Streamer, error) {
 						UserProfileImageUrl: streamerInfo.Users[0].ProfileImageURL,
 						StreamID:            streamData.Streams[0].ID,
 						StreamTitle:         streamData.Streams[0].Title,
+						StreamGameID:        streamData.Streams[0].GameID,
 						StreamGameName:      streamData.Streams[0].GameName,
 						StreamViewerCount:   streamData.Streams[0].ViewerCount,
 						StreamThumbnailUrl:  fmt.Sprintf("https://static-cdn.jtvnw.net/previews-ttv/live_user_%s-{width}x{height}.jpg", uInfo.Login),
+						TwitchURL:           streamerUrls.TwitchURL,
+						RedditURL:           streamerUrls.RedditURL,
+						InstagramURL:        streamerUrls.InstagramURL,
+						TwitterURL:          streamerUrls.TwitterURL,
+						DiscordURL:          streamerUrls.DiscordURL,
+						YouTubeURL:          streamerUrls.YouTubeURL,
+						TikTokURL:           streamerUrls.TikTokURL,
 					}
 					insertRes, err := Stream.InsertOne(context.Background(), toInsert)
 					if err != nil {
@@ -92,6 +113,25 @@ func CreateStream() ([]twitch.Streamer, error) {
 		}
 	}
 	return streamers, nil
+}
+
+func GetStreamerLinks(id int) (twitch.StreamerURLs, error) {
+	var search twitch.Streamer
+	if err := Users.FindOne(context.Background(), bson.M{"id": id}).Decode(&search); err != nil {
+		panic(err)
+	}
+
+	toSend := twitch.StreamerURLs{
+		TwitchURL:    search.TwitchURL,
+		RedditURL:    search.RedditURL,
+		InstagramURL: search.InstagramURL,
+		TwitterURL:   search.TwitterURL,
+		DiscordURL:   search.DiscordURL,
+		YouTubeURL:   search.YouTubeURL,
+		TikTokURL:    search.TikTokURL,
+	}
+
+	return toSend, nil
 }
 
 // Lowest view count -> highest
