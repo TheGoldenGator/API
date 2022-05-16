@@ -245,7 +245,7 @@ func StreamOffline(event twitch.EventSubStreamOfflineEvent) error {
 		context.Background(),
 		bson.M{"user_id": event.BroadcasterUserID},
 		bson.D{
-			{Key: "$set", Value: bson.D{{Key: "status", Value: "offline"}}},
+			{Key: "$set", Value: bson.D{{Key: "status", Value: "offline"}, {Key: "viewers", Value: 0}}},
 		},
 	)
 
@@ -306,6 +306,7 @@ func SortTeamMembers() error {
 					DisplayName:     t.Users[i].UserName,
 					ProfileImageUrl: twitchUser.Users[0].ProfileImageURL,
 					TwitchURL:       fmt.Sprintf("https://www.twitch.tv/%v", t.Users[i].UserLogin),
+					InstagramURL:    "",
 					RedditURL:       "",
 					TwitterURL:      "",
 					DiscordURL:      "",
