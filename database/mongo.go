@@ -170,33 +170,17 @@ func GetStreams(status, sorted string) ([]twitch.PublicStream, error) {
 	}
 
 	// Sorts based on viewer count
-	if sorted == "viewcount_high" {
-		// Sorts by viewcount: high -> low
-		sort.Slice(streams, func(i, j int) bool {
-			if streams[i].StreamViewerCount < streams[j].StreamViewerCount {
-				return false
-			}
-			if streams[i].StreamViewerCount > streams[j].StreamViewerCount {
-				return true
-			}
-			return streams[i].StreamViewerCount < streams[j].StreamViewerCount
-		})
-		return streams, nil
-	} else if sorted == "viewcount_low" {
-		// Sorts by viewcount: low -> high
-		sort.Slice(streams, func(i, j int) bool {
-			if streams[i].StreamViewerCount < streams[j].StreamViewerCount {
-				return true
-			}
-			if streams[i].StreamViewerCount > streams[j].StreamViewerCount {
-				return false
-			}
-			return streams[i].StreamViewerCount < streams[j].StreamViewerCount
-		})
-		return streams, nil
-	} else {
-		return streams, nil
-	}
+	// Sorts by viewcount: high -> low
+	sort.Slice(streams, func(i, j int) bool {
+		if streams[i].StreamViewerCount < streams[j].StreamViewerCount {
+			return false
+		}
+		if streams[i].StreamViewerCount > streams[j].StreamViewerCount {
+			return true
+		}
+		return streams[i].StreamViewerCount < streams[j].StreamViewerCount
+	})
+	return streams, nil
 }
 
 // Fetches all streamers that are watched for.
@@ -275,6 +259,25 @@ func StreamOnline(event twitch.EventSubStreamOnlineEvent) error {
 	}
 
 	fmt.Printf("Stream went online for %v: %v\n", event.BroadcasterUserLogin, result.ModifiedCount)
+	return nil
+}
+
+func ChannelUpdate(event twitch.EventSubChannelUpdateEvent) error {
+	result, err := Stream.UpdateOne(
+		context.Background(),
+		bson.M{"user_id": event.BroadcasterUserID},
+		bson.D{
+			{Key: "$set", Value: bson.D{{Key: "stream_title", Value: event.Title}}},
+			{Key: "$set", Value: bson.D{{Key: "stream_game_name", Value: event.CategoryName}}},
+			{Key: "$set", Value: bson.D{{Key: "stream_game_id", Value: event.CategoryID}}},
+		},
+	)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Stream changed for %v: %v [%v:%v] changed: %v", event.BroadcasterUserLogin, event.Title, event.CategoryName, event.CategoryID, result.ModifiedCount)
 	return nil
 }
 

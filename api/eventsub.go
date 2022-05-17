@@ -95,5 +95,9 @@ func (a *App) EventsubRecievedNotification(w http.ResponseWriter, r *http.Reques
 			panic(err.Error())
 		}
 
+		errDb := database.ChannelUpdate(streamUpdate)
+		if errDb != nil {
+			panic(err.Error())
+		}
 	}
 }
