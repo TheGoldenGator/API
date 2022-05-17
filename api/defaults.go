@@ -23,11 +23,11 @@ func (a *App) Home(w http.ResponseWriter, r *http.Request) {
 		[]Url{
 			{
 				Description: "Get all the current Golden Gator streams that are offline and online.",
-				URL:         "localhost:8000/streams",
+				URL:         "https://api.thegoldengator.tv/streams",
 			},
 			{
 				Description: "Gets all streamers that are listed in the Golden Gator",
-				URL:         "localhost:8000/streamers",
+				URL:         "https://api.thegoldengator.tv/streamers",
 			},
 		}
 
@@ -84,11 +84,12 @@ func (a *App) NotFound(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) Test(w http.ResponseWriter, r *http.Request) {
-	data, err := database.CreateStream()
+	err := database.EventSubscribe()
+	//data, err := database.CreateStream()
 	//test, err := database.GetStreamerLinks(277057209)
 	if err != nil {
 		RespondWithError(w, r, http.StatusBadRequest, err.Error())
 	}
 
-	RespondWithJSON(w, r, http.StatusOK, data)
+	RespondWithJSON(w, r, http.StatusOK, "Okay!")
 }
