@@ -228,9 +228,14 @@ func GetUsers() ([]twitch.Streamer, error) {
 
 // Changes MongoDB status for streamer to offline.
 func StreamOffline(event twitch.EventSubStreamOfflineEvent) error {
+	id, err := strconv.Atoi(event.BroadcasterUserID)
+	if err != nil {
+		return err
+	}
+
 	result, err := Stream.UpdateOne(
 		context.Background(),
-		bson.M{"user_id": event.BroadcasterUserID},
+		bson.M{"user_id": id},
 		bson.D{
 			{Key: "$set", Value: bson.D{{Key: "status", Value: "offline"}, {Key: "viewers", Value: 0}}},
 		},
@@ -246,9 +251,14 @@ func StreamOffline(event twitch.EventSubStreamOfflineEvent) error {
 
 // Changes MongoDB status for streamer to online.
 func StreamOnline(event twitch.EventSubStreamOnlineEvent) error {
+	id, err := strconv.Atoi(event.BroadcasterUserID)
+	if err != nil {
+		return err
+	}
+
 	result, err := Stream.UpdateOne(
 		context.Background(),
-		bson.M{"user_id": event.BroadcasterUserID},
+		bson.M{"user_id": id},
 		bson.D{
 			{Key: "$set", Value: bson.D{{Key: "status", Value: "online"}}},
 		},
@@ -263,9 +273,14 @@ func StreamOnline(event twitch.EventSubStreamOnlineEvent) error {
 }
 
 func ChannelUpdate(event twitch.EventSubChannelUpdateEvent) error {
+	id, err := strconv.Atoi(event.BroadcasterUserID)
+	if err != nil {
+		return err
+	}
+
 	result, err := Stream.UpdateOne(
 		context.Background(),
-		bson.M{"user_id": event.BroadcasterUserID},
+		bson.M{"user_id": id},
 		bson.D{
 			{Key: "$set", Value: bson.D{{Key: "stream_title", Value: event.Title}}},
 			{Key: "$set", Value: bson.D{{Key: "stream_game_name", Value: event.CategoryName}}},
