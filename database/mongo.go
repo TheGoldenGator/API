@@ -5,9 +5,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Mahcks/TheGoldenGator/configure"
@@ -32,18 +34,13 @@ func CreateStream() ([]twitch.Streamer, error) {
 		if err := Stream.FindOne(context.Background(), bson.M{"user_id": streamers[i].ID}).Decode(&str); err != nil {
 			if err.Error() == "mongo: no documents in result" {
 				// No document found so create streamer.
-				sId := strconv.Itoa(streamers[i].ID)
 
-				streamerInfo, err := twitch.GetTwitchUser(sId)
+				streamerInfo, err := twitch.GetTwitchUser(streamers[i].ID)
 				if err != nil {
 					return nil, err
 				}
 
 				uInfo := streamerInfo.Users[0]
-				uID, err := strconv.Atoi(uInfo.ID)
-				if err != nil {
-					return nil, err
-				}
 
 				streamData, err := twitch.GetStreamInfo(streamerInfo.Users[0])
 				fmt.Println(streamData, err)
@@ -51,7 +48,7 @@ func CreateStream() ([]twitch.Streamer, error) {
 					return nil, err
 				}
 
-				streamerUrls, err := GetStreamerLinks(uID)
+				streamerUrls, err := GetStreamerLinks(streamers[i].ID)
 				if err != nil {
 					return nil, err
 				}
@@ -61,7 +58,7 @@ func CreateStream() ([]twitch.Streamer, error) {
 				if len(streamData.Streams) == 0 {
 					toInsert := twitch.PublicStream{
 						Status:              "offline",
-						UserID:              uID,
+						UserID:              streamers[i].ID,
 						UserLogin:           uInfo.Login,
 						UserDisplayName:     uInfo.DisplayName,
 						UserProfileImageUrl: streamerInfo.Users[0].ProfileImageURL,
@@ -69,7 +66,7 @@ func CreateStream() ([]twitch.Streamer, error) {
 						StreamTitle:         "N/A",
 						StreamGameID:        "N/A",
 						StreamGameName:      "N/A",
-						StreamViewerCount:   0,
+						StreamViewerCount:   "0",
 						StreamThumbnailUrl:  fmt.Sprintf("https://static-cdn.jtvnw.net/previews-ttv/live_user_%s-{width}x{height}.jpg", uInfo.Login),
 						TwitchURL:           streamerUrls.TwitchURL,
 						RedditURL:           streamerUrls.RedditURL,
@@ -86,9 +83,10 @@ func CreateStream() ([]twitch.Streamer, error) {
 					fmt.Printf("No stream document found for %s and they are offline so inserting blank document: %s \n", uInfo.Login, insertRes.InsertedID)
 				} else {
 					// Stream online and data found, inserting that data.
+					viewerCountStr := strconv.Itoa(streamData.Streams[0].ViewerCount)
 					toInsert := twitch.PublicStream{
 						Status:              "online",
-						UserID:              uID,
+						UserID:              streamerInfo.Users[0].ID,
 						UserLogin:           uInfo.Login,
 						UserDisplayName:     uInfo.DisplayName,
 						UserProfileImageUrl: streamerInfo.Users[0].ProfileImageURL,
@@ -96,7 +94,7 @@ func CreateStream() ([]twitch.Streamer, error) {
 						StreamTitle:         streamData.Streams[0].Title,
 						StreamGameID:        streamData.Streams[0].GameID,
 						StreamGameName:      streamData.Streams[0].GameName,
-						StreamViewerCount:   streamData.Streams[0].ViewerCount,
+						StreamViewerCount:   viewerCountStr,
 						StreamThumbnailUrl:  fmt.Sprintf("https://static-cdn.jtvnw.net/previews-ttv/live_user_%s-{width}x{height}.jpg", uInfo.Login),
 						TwitchURL:           streamerUrls.TwitchURL,
 						RedditURL:           streamerUrls.RedditURL,
@@ -118,7 +116,7 @@ func CreateStream() ([]twitch.Streamer, error) {
 	return streamers, nil
 }
 
-func GetStreamerLinks(id int) (twitch.StreamerURLs, error) {
+func GetStreamerLinks(id string) (twitch.StreamerURLs, error) {
 	var search twitch.Streamer
 	if err := Users.FindOne(context.Background(), bson.M{"id": id}).Decode(&search); err != nil {
 		panic(err)
@@ -172,13 +170,16 @@ func GetStreams(status, sorted string) ([]twitch.PublicStream, error) {
 	// Sorts based on viewer count
 	// Sorts by viewcount: high -> low
 	sort.Slice(streams, func(i, j int) bool {
-		if streams[i].StreamViewerCount < streams[j].StreamViewerCount {
+		first, _ := strconv.Atoi(streams[i].StreamViewerCount)
+		second, _ := strconv.Atoi(streams[j].StreamViewerCount)
+
+		if first < second {
 			return false
 		}
-		if streams[i].StreamViewerCount > streams[j].StreamViewerCount {
+		if first > second {
 			return true
 		}
-		return streams[i].StreamViewerCount < streams[j].StreamViewerCount
+		return first < second
 	})
 	return streams, nil
 }
@@ -237,7 +238,7 @@ func StreamOffline(event twitch.EventSubStreamOfflineEvent) error {
 		context.Background(),
 		bson.M{"user_id": id},
 		bson.D{
-			{Key: "$set", Value: bson.D{{Key: "status", Value: "offline"}, {Key: "viewers", Value: 0}}},
+			{Key: "$set", Value: bson.D{{Key: "status", Value: "offline"}, {Key: "stream_viewer_count", Value: 0}}},
 		},
 	)
 
@@ -298,6 +299,7 @@ func ChannelUpdate(event twitch.EventSubChannelUpdateEvent) error {
 
 // This grabs the Twitch team of The Golden Gator(friendzone) and stores them as members
 func SortTeamMembers() error {
+	fmt.Println("UPDATING TEAM MEMBERS")
 	tData, err := twitch.GetTeamMembers()
 	if err != nil {
 		return err
@@ -307,13 +309,8 @@ func SortTeamMembers() error {
 	t := tData.Data[0]
 	for i := 0; i < len(t.Users); i++ {
 		// Check if the streamer is in members or not yet.
-		id, err := strconv.Atoi(t.Users[i].UserID)
-		if err != nil {
-			return nil
-		}
-
 		var search twitch.Streamer
-		if err := Users.FindOne(context.Background(), bson.M{"id": id}).Decode(&search); err != nil {
+		if err := Users.FindOne(context.Background(), bson.M{"id": t.Users[i].UserID}).Decode(&search); err != nil {
 			if err.Error() == "mongo: no documents in result" {
 				// Gets Twitch user data to get the PFP
 				twitchUser, err := twitch.GetTwitchUser(t.Users[i].UserID)
@@ -322,17 +319,17 @@ func SortTeamMembers() error {
 				}
 
 				toI := twitch.Streamer{
-					ID:              id,
+					ID:              t.Users[i].UserID,
 					Login:           t.Users[i].UserLogin,
 					DisplayName:     t.Users[i].UserName,
 					ProfileImageUrl: twitchUser.Users[0].ProfileImageURL,
 					TwitchURL:       fmt.Sprintf("https://www.twitch.tv/%v", t.Users[i].UserLogin),
-					InstagramURL:    "",
-					RedditURL:       "",
-					TwitterURL:      "",
-					DiscordURL:      "",
-					YouTubeURL:      "",
-					TikTokURL:       "",
+					InstagramURL:    "N/A",
+					RedditURL:       "N/A",
+					TwitterURL:      "N/A",
+					DiscordURL:      "N/A",
+					YouTubeURL:      "N/A",
+					TikTokURL:       "N/A",
 				}
 
 				Users.InsertOne(context.Background(), toI)
@@ -375,12 +372,11 @@ func EventSubscribe() error {
 	c := httpClient()
 
 	for i := 0; i < len(users); i++ {
-		sId := strconv.Itoa(users[i].ID)
 		toPost := EventSubCreate{
 			Type:    "stream.offline",
 			Version: "1",
 			Condition: EventSubCreateCondition{
-				BroadcasterUserId: sId,
+				BroadcasterUserId: users[i].ID,
 			},
 			Transport: EventSubCreateTransport{
 				Method:   "webhook",
@@ -411,4 +407,59 @@ func EventSubscribe() error {
 		fmt.Println(res)
 	}
 	return nil
+}
+
+func UpdateViewCount() ([]string, error) {
+	cursor, err := Stream.Find(context.Background(), bson.M{"status": "online"})
+	if err != nil {
+		return nil, err
+	}
+
+	var streams []twitch.PublicStream
+	if err = cursor.All(context.Background(), &streams); err != nil {
+		return nil, err
+	}
+
+	var ids = []string{}
+	for i := 0; i < len(streams); i++ {
+		ids = append(ids, streams[i].UserID)
+	}
+
+	url := "https://api.twitch.tv/helix/streams?first=100&user_id=" + strings.Join(ids, "&user_id=")
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Add("Authorization", "Bearer "+configure.Config.GetString("twitch_client_token"))
+	req.Header.Add("Client-Id", configure.Config.GetString("twitch_client_id"))
+
+	c := httpClient()
+	res, err := c.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	body, _ := ioutil.ReadAll(res.Body)
+	streamInfo := twitch.ManyStreams{}
+	if err := json.Unmarshal(body, &streamInfo); err != nil {
+		if string(body) == `""` {
+			return nil, nil
+		}
+	}
+
+	for i := 0; i < len(streamInfo.Streams); i++ {
+		sViewers := strconv.Itoa(streamInfo.Streams[i].ViewerCount)
+
+		result, err := Stream.UpdateOne(
+			context.Background(),
+			bson.M{"user_id": streamInfo.Streams[i].ID},
+			bson.D{
+				{Key: "$set", Value: bson.D{{Key: "stream_viewer_count", Value: sViewers}}},
+			},
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		fmt.Printf("Updated viewer count for %v - %v [%v]\n", streamInfo.Streams[i].UserLogin, streamInfo.Streams[i].ViewerCount, result.ModifiedCount)
+	}
+	return ids, nil
 }

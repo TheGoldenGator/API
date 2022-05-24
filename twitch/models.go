@@ -23,7 +23,7 @@ type User struct {
 }
 
 type Streamer struct {
-	ID              int    `json:"id" bson:"id" example:"11897156"`
+	ID              string `json:"id" bson:"id" example:"11897156"`
 	Login           string `json:"login" bson:"login" example:"roflgator"`
 	DisplayName     string `json:"display_name" bson:"display_name" example:"roflgator"`
 	ProfileImageUrl string `json:"profile_image_url" bson:"profile_image_url" example:"https://static-cdn.jtvnw.net/jtv_user_pictures/2e24ced1-fec5-4cd8-858f-130f798fa023-profile_image-600x600.png"`
@@ -48,7 +48,7 @@ type StreamerURLs struct {
 
 type PublicStream struct {
 	Status              string `json:"status" bson:"status" example:"online"`
-	UserID              int    `json:"user_id" bson:"user_id" example:"11897156"`
+	UserID              string `json:"user_id" bson:"user_id" example:"11897156"`
 	UserLogin           string `json:"user_login" bson:"user_login" example:"roflgator"`
 	UserDisplayName     string `json:"user_display_name" bson:"user_display_name" example:"roflgator"`
 	UserProfileImageUrl string `json:"user_profile_image_url" bson:"user_profile_image_url" example:"https://static-cdn.jtvnw.net/jtv_user_pictures/f40e0bfe-f376-49b1-ad08-7b63f866dabb-profile_image-300x300.png"`
@@ -56,7 +56,7 @@ type PublicStream struct {
 	StreamTitle         string `json:"stream_title" bson:"stream_title" example:"GARLIC PHONE WITH THE MOST POGGERS ARTISTS, SPECIAL GUEST RUBBERROSS, OBAMA AND YOUR MOM!"`
 	StreamGameID        string `json:"stream_game_id" bson:"stream_game_id" example:""`
 	StreamGameName      string `json:"stream_game_name" bson:"stream_game_name" example:"Gartic Phone"`
-	StreamViewerCount   int    `json:"stream_viewer_count" bson:"stream_viewer_count" example:"4590"`
+	StreamViewerCount   string `json:"stream_viewer_count" bson:"stream_viewer_count" example:"4590"`
 	StreamThumbnailUrl  string `json:"stream_thumbnail_url" bson:"stream_thumbnail_url" example:"https://static-cdn.jtvnw.net/previews-ttv/live_user_roflgator-{width}x{height}.jpg"`
 	TwitchURL           string `json:"twitch" bson:"twitch" example:"https://www.twitch.tv/roflgator"`
 	RedditURL           string `json:"reddit" bson:"reddit" example:""`
