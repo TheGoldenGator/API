@@ -40,6 +40,7 @@ func CreateStream() ([]twitch.Streamer, error) {
 					return nil, err
 				}
 
+				fmt.Println(streamerInfo)
 				uInfo := streamerInfo.Users[0]
 
 				streamData, err := twitch.GetStreamInfo(streamerInfo.Users[0])
@@ -119,6 +120,7 @@ func CreateStream() ([]twitch.Streamer, error) {
 func GetStreamerLinks(id string) (twitch.StreamerURLs, error) {
 	var search twitch.Streamer
 	if err := Users.FindOne(context.Background(), bson.M{"id": id}).Decode(&search); err != nil {
+		fmt.Println("ERROR NO LINKS")
 		panic(err)
 	}
 

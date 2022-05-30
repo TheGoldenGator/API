@@ -100,9 +100,9 @@ func (a *App) initializeRoutes() {
 	/* REST ROUTES */
 	a.Router.HandleFunc("/", a.Home).Methods("GET")
 	a.Router.HandleFunc("/streams", a.Streams).Methods("GET")
-	a.Router.HandleFunc("/users", a.Users).Methods("GET")
+	a.Router.HandleFunc("/streamers", a.Users).Methods("GET")
 	a.Router.HandleFunc("/eventsub", a.EventsubRecievedNotification).Methods("POST")
 	a.Router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
-	a.Router.HandleFunc("/test", a.Test).Methods("GET")
+	// a.Router.HandleFunc("/test", a.Test).Methods("GET")
 	/* a.Router.HandleFunc("/teams", a.TeamData).Methods("GET") */
 }

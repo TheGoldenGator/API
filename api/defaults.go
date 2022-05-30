@@ -85,7 +85,7 @@ func (a *App) NotFound(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) Test(w http.ResponseWriter, r *http.Request) {
 	//err := database.EventSubscribe()
-	//data, err := database.CreateStream()
+	// data, err := database.CreateStream()
 	//test, err := database.GetStreamerLinks(277057209)
 	//data := database.SortTeamMembers()
 

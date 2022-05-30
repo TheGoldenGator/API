@@ -40,17 +40,17 @@ func Connect(mongoURI string) error {
 
 	// Redis Connection
 	// TODO: Change this when in production
-	/* RDB = redis.NewClient(&redis.Options{
+	RDB = redis.NewClient(&redis.Options{
 		Addr:     "redis:6379",
 		Password: "mypassword",
 		DB:       0,
-	}) */
+	})
 
-	RDB = redis.NewClient(&redis.Options{
+	/* RDB = redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
 		DB:       0,
-	})
+	}) */
 
 	pong, err := RDB.Ping(RDB.Context()).Result()
 	if err != nil {
