@@ -30,14 +30,12 @@ func main() {
 		fmt.Println("error connecting to database: ", err)
 	}
 
-	if configure.Config.GetString("environment") == "prod" {
-		go queries.DoEvery(time.Minute*5, func(t time.Time) {
-			err := queries.ViewCountPoll()
-			if err != nil {
-				fmt.Println("Error updating viewcount", err)
-			}
-		})
-	}
+	go queries.DoEvery(time.Minute*5, func(t time.Time) {
+		err := queries.ViewCountPoll()
+		if err != nil {
+			fmt.Println("Error updating viewcount", err)
+		}
+	})
 
 	a := api.App{}
 	a.Initialize()
