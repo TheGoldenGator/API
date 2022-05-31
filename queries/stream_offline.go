@@ -15,7 +15,7 @@ func StreamOffline(event twitch.EventSubStreamOfflineEvent) error {
 		context.Background(),
 		bson.M{"user_id": event.BroadcasterUserID},
 		bson.D{
-			{Key: "$set", Value: bson.D{{Key: "status", Value: "offline"}, {Key: "stream_viewer_count", Value: 0}}},
+			{Key: "$set", Value: bson.D{{Key: "status", Value: "offline"}, {Key: "stream_viewer_count", Value: "0"}}},
 		},
 	)
 
