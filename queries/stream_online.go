@@ -14,9 +14,7 @@ func StreamOnline(event twitch.EventSubStreamOnlineEvent) error {
 	result, err := database.Stream.UpdateOne(
 		context.Background(),
 		bson.M{"user_id": event.BroadcasterUserID},
-		bson.D{
-			{Key: "$set", Value: bson.D{{Key: "status", Value: "online"}}},
-		},
+		bson.M{"$set": bson.M{"status": "online", "stream_started_at": GetRFCTimestamp()}},
 	)
 
 	if err != nil {

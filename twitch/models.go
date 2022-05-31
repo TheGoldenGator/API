@@ -58,6 +58,7 @@ type PublicStream struct {
 	StreamGameName      string `json:"stream_game_name" bson:"stream_game_name" example:"Gartic Phone"`
 	StreamViewerCount   string `json:"stream_viewer_count" bson:"stream_viewer_count" example:"4590"`
 	StreamThumbnailUrl  string `json:"stream_thumbnail_url" bson:"stream_thumbnail_url" example:"https://static-cdn.jtvnw.net/previews-ttv/live_user_roflgator-{width}x{height}.jpg"`
+	StreamStartedAt     string `json:"stream_started_at" bson:"stream_started_at" example:""`
 	TwitchURL           string `json:"twitch" bson:"twitch" example:"https://www.twitch.tv/roflgator"`
 	RedditURL           string `json:"reddit" bson:"reddit" example:""`
 	InstagramURL        string `json:"instagram" bson:"instagram" example:""`
