@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/Mahcks/TheGoldenGator/database"
 	"github.com/Mahcks/TheGoldenGator/twitch"
@@ -91,7 +92,7 @@ func CreateStream() ([]twitch.Streamer, error) {
 						StreamGameName:      streamData.Streams[0].GameName,
 						StreamViewerCount:   viewerCountStr,
 						StreamThumbnailUrl:  fmt.Sprintf("https://static-cdn.jtvnw.net/previews-ttv/live_user_%s-{width}x{height}.jpg", uInfo.Login),
-						StreamStartedAt:     streamData.Streams[0].StartedAt.String(),
+						StreamStartedAt:     streamData.Streams[0].StartedAt.Format(time.RFC3339),
 						TwitchURL:           streamerUrls.TwitchURL,
 						RedditURL:           streamerUrls.RedditURL,
 						InstagramURL:        streamerUrls.InstagramURL,
