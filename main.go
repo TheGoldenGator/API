@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/Mahcks/TheGoldenGator/api"
 	"github.com/Mahcks/TheGoldenGator/configure"
 	"github.com/Mahcks/TheGoldenGator/database"
+	"github.com/Mahcks/TheGoldenGator/queries"
 
 	_ "github.com/Mahcks/TheGoldenGator/docs"
 )
@@ -27,6 +29,13 @@ func main() {
 	if err != nil {
 		fmt.Println("error connecting to database: ", err)
 	}
+
+	go queries.DoEvery(time.Minute*5, func(t time.Time) {
+		err := queries.ViewCountPoll()
+		if err != nil {
+			panic(err)
+		}
+	})
 
 	a := api.App{}
 	a.Initialize()

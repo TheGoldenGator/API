@@ -8,12 +8,29 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Mahcks/TheGoldenGator/configure"
 	"github.com/Mahcks/TheGoldenGator/database"
 	"github.com/Mahcks/TheGoldenGator/twitch"
 	"go.mongodb.org/mongo-driver/bson"
 )
+
+/* Polling to update viewer count every 5 minutes */
+func DoEvery(d time.Duration, f func(time.Time)) {
+	for x := range time.Tick(d) {
+		f(x)
+	}
+}
+
+func ViewCountPoll() error {
+	_, err := UpdateViewCount()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func UpdateViewCount() ([]string, error) {
 	cursor, err := database.Stream.Find(context.Background(), bson.M{"status": "online"})
