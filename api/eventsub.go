@@ -12,7 +12,7 @@ import (
 	"net/http"
 
 	"github.com/Mahcks/TheGoldenGator/configure"
-	"github.com/Mahcks/TheGoldenGator/database"
+	"github.com/Mahcks/TheGoldenGator/queries"
 	"github.com/Mahcks/TheGoldenGator/twitch"
 )
 
@@ -71,7 +71,7 @@ func (a *App) EventsubRecievedNotification(w http.ResponseWriter, r *http.Reques
 			panic(err.Error())
 		}
 
-		errDb := database.StreamOnline(streamOnline)
+		errDb := queries.StreamOnline(streamOnline)
 		if errDb != nil {
 			panic(err.Error())
 		}
@@ -83,7 +83,7 @@ func (a *App) EventsubRecievedNotification(w http.ResponseWriter, r *http.Reques
 			panic(err.Error())
 		}
 
-		errDb := database.StreamOffline(streamOffline)
+		errDb := queries.StreamOffline(streamOffline)
 		if errDb != nil {
 			panic(err.Error())
 		}
@@ -95,7 +95,7 @@ func (a *App) EventsubRecievedNotification(w http.ResponseWriter, r *http.Reques
 			panic(err.Error())
 		}
 
-		errDb := database.ChannelUpdate(streamUpdate)
+		errDb := queries.ChannelUpdate(streamUpdate)
 		if errDb != nil {
 			panic(err.Error())
 		}

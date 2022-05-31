@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/Mahcks/TheGoldenGator/database"
+	"github.com/Mahcks/TheGoldenGator/queries"
 )
 
 type Url struct {
@@ -47,13 +47,13 @@ func (a *App) Streams(w http.ResponseWriter, r *http.Request) {
 	sortP := r.URL.Query().Get("sort")
 
 	if statusP == "online" || statusP == "offline" {
-		streams, err := database.GetStreams(statusP, sortP)
+		streams, err := queries.GetStreams(statusP, sortP)
 		if err != nil {
 			RespondWithError(w, r, http.StatusBadRequest, err.Error())
 		}
 		RespondWithJSON(w, r, http.StatusOK, streams)
 	} else {
-		streams, err := database.GetStreams("all", "all")
+		streams, err := queries.GetStreams("all", "all")
 		if err != nil {
 			RespondWithError(w, r, http.StatusBadRequest, err.Error())
 		}
@@ -68,9 +68,9 @@ func (a *App) Streams(w http.ResponseWriter, r *http.Request) {
 // @Tags Default
 // @Produce json
 // @Success 200 {array} twitch.Streamer
-// @Router /users [get]
+// @Router /streamers [get]
 func (a *App) Users(w http.ResponseWriter, r *http.Request) {
-	users, err := database.GetUsers()
+	users, err := queries.GetStreamers()
 	if err != nil {
 		RespondWithError(w, r, http.StatusBadRequest, err.Error())
 	}
@@ -89,7 +89,7 @@ func (a *App) Test(w http.ResponseWriter, r *http.Request) {
 	//test, err := database.GetStreamerLinks(277057209)
 	//data := database.SortTeamMembers()
 
-	data, err := database.UpdateViewCount()
+	data, err := queries.UpdateViewCount()
 
 	if err != nil {
 		RespondWithError(w, r, http.StatusBadRequest, err.Error())
