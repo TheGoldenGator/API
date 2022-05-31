@@ -9,8 +9,9 @@ import (
 )
 
 type ServerCfg struct {
-	ConfigFile string `mapstructure:"config_file" json:"config_file"`
-	Port       string `mapstructure:"port" json:"port"`
+	ConfigFile  string `mapstructure:"config_file" json:"config_file"`
+	Port        string `mapstructure:"port" json:"port"`
+	Environment string `mapstructure:"environment" json:"environment"`
 
 	TwitchClientId     string `mapstructure:"twitch_client_id" json:"twitch_client_id"`
 	TwitchClientSecret string `mapstructure:"twitch_client_secret" json:"twitch_client_secret"`

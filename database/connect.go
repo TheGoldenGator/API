@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/Mahcks/TheGoldenGator/configure"
 	"github.com/go-redis/redis/v8"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -39,18 +40,19 @@ func Connect(mongoURI string) error {
 	Users = ggdb.Collection("users")
 
 	// Redis Connection
-	// TODO: Change this when in production
-	RDB = redis.NewClient(&redis.Options{
-		Addr:     "redis:6379",
-		Password: "mypassword",
-		DB:       0,
-	})
-
-	/* RDB = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
-	}) */
+	if configure.Config.GetString("environment") == "dev" {
+		RDB = redis.NewClient(&redis.Options{
+			Addr:     "localhost:6379",
+			Password: "",
+			DB:       0,
+		})
+	} else {
+		RDB = redis.NewClient(&redis.Options{
+			Addr:     "redis:6379",
+			Password: "mypassword",
+			DB:       0,
+		})
+	}
 
 	pong, err := RDB.Ping(RDB.Context()).Result()
 	if err != nil {

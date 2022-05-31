@@ -13,7 +13,7 @@ import (
 )
 
 // @title TheGoldenGator API
-// @version 0.0.3
+// @version 0.7.3
 // @description Documentation for the public REST API.
 // @termsOfService http://swagger.io/terms/
 
@@ -30,12 +30,14 @@ func main() {
 		fmt.Println("error connecting to database: ", err)
 	}
 
-	go queries.DoEvery(time.Minute*5, func(t time.Time) {
-		err := queries.ViewCountPoll()
-		if err != nil {
-			panic(err)
-		}
-	})
+	if configure.Config.GetString("environment") == "prod" {
+		go queries.DoEvery(time.Minute*5, func(t time.Time) {
+			err := queries.ViewCountPoll()
+			if err != nil {
+				fmt.Println("Error updating viewcount", err)
+			}
+		})
+	}
 
 	a := api.App{}
 	a.Initialize()
