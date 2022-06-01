@@ -61,7 +61,7 @@ func CreateStream() ([]twitch.Streamer, error) {
 						StreamTitle:         "N/A",
 						StreamGameID:        "N/A",
 						StreamGameName:      "N/A",
-						StreamViewerCount:   "0",
+						StreamViewerCount:   "1",
 						StreamThumbnailUrl:  fmt.Sprintf("https://static-cdn.jtvnw.net/previews-ttv/live_user_%s-{width}x{height}.jpg", uInfo.Login),
 						StreamStartedAt:     GetRFCTimestamp(),
 						TwitchURL:           streamerUrls.TwitchURL,

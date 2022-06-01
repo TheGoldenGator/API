@@ -8,6 +8,7 @@ import (
 	"github.com/Mahcks/TheGoldenGator/configure"
 	"github.com/Mahcks/TheGoldenGator/database"
 	"github.com/Mahcks/TheGoldenGator/queries"
+	"github.com/go-co-op/gocron"
 
 	_ "github.com/Mahcks/TheGoldenGator/docs"
 )
@@ -30,13 +31,27 @@ func main() {
 		fmt.Println("error connecting to database: ", err)
 	}
 
-	go queries.DoEvery(time.Minute*5, func(t time.Time) {
+	s := gocron.NewScheduler(time.UTC)
+	s.Every(5).Minutes().Do(func() {
 		err := queries.ViewCountPoll()
 		if err != nil {
 			fmt.Println("Error updating viewcount", err)
 		}
+
+		errCache := queries.GetStreamsDeleteCache()
+		if errCache != nil {
+			fmt.Println("Error deleting stream cache", errCache)
+		}
+		fmt.Println("Deleted stream cache")
+
+		_, errStreams := queries.GetStreams("online", "")
+		if errStreams != nil {
+			fmt.Println("Error updating streams", errStreams)
+		}
+		fmt.Println("Updated stream statuses")
 	})
 
+	s.StartAsync()
 	a := api.App{}
 	a.Initialize()
 	a.Run(":7500")
