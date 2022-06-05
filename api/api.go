@@ -1,18 +1,22 @@
 package api
 
 import (
+	"context"
+	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/Mahcks/TheGoldenGator/configure"
+	"github.com/Mahcks/TheGoldenGator/websocket"
+	"golang.org/x/oauth2"
 
-	"github.com/Mahcks/TheGoldenGator/middleware"
+	oidc "github.com/coreos/go-oidc"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
@@ -32,12 +36,29 @@ type ResponseBodyError struct {
 	Error      string `json:"error"`
 }
 
+const (
+	stateCallbackKey = "oauth-state-callback"
+	oauthSessionName = "oauth-oidc-session"
+	oauthTokenKey    = "oauth-token"
+)
+
+var (
+	// Consider storing the secret in an environment variable or a dedicated storage system.
+	scopes       = []string{"user:read:email", "openid", "channel:read:redemptions"}
+	claims       = oauth2.SetAuthURLParam("claims", `{"id_token":{"email":null}}`)
+	oauth2Config *oauth2.Config
+	oidcIssuer   = "https://id.twitch.tv/oauth2"
+	oidcVerifier *oidc.IDTokenVerifier
+	cookieSecret = []byte("Please use a more sensible secret than this one")
+	cookieStore  = sessions.NewCookieStore(cookieSecret)
+)
+
 func (a *App) Initialize() {
 	a.Router = mux.NewRouter()
 
-	logger := log.New(os.Stdout, "", log.LstdFlags)
+	/* logger := log.New(os.Stdout, "", log.LstdFlags)
 	logMiddleware := middleware.NewLogMiddleware(logger)
-	a.Router.Use(logMiddleware.Func())
+	a.Router.Use(logMiddleware.Func()) */
 
 	a.initializeRoutes()
 }
@@ -95,7 +116,33 @@ func RespondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload i
 }
 
 func (a *App) initializeRoutes() {
+	// Gob encoding for gorilla/sessions
+	gob.Register(&oauth2.Token{})
+
+	/* Auth */
+	provider, err := oidc.NewProvider(context.Background(), oidcIssuer)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	oauth2Config = &oauth2.Config{
+		ClientID:     configure.Config.GetString("twitch_client_id"),
+		ClientSecret: configure.Config.GetString("twitch_client_secret"),
+		Scopes:       scopes,
+		Endpoint:     provider.Endpoint(),
+		RedirectURL:  "http://localhost:8000/redirect",
+	}
+	oidcVerifier = provider.Verifier(&oidc.Config{ClientID: configure.Config.GetString("twitch_client_id")})
+
 	a.Router.NotFoundHandler = http.HandlerFunc(a.NotFound)
+
+	pool := websocket.WSPool
+	go pool.Start()
+
+	/* WebSockets */
+	a.Router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		a.serveWs(pool, w, r)
+	})
 
 	/* REST ROUTES */
 	a.Router.HandleFunc("/", a.Home).Methods("GET")
@@ -104,6 +151,10 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/eventsub", a.EventsubRecievedNotification).Methods("POST")
 	a.Router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 
-	//a.Router.HandleFunc("/test", a.Test).Methods("GET")
+	/* Auth */
+	a.Router.HandleFunc("/login", a.HandleLogin).Methods("GET")
+	a.Router.HandleFunc("/redirect", a.HandleOAuth2Callback).Methods("GET")
+
+	a.Router.HandleFunc("/test", a.Test).Methods("GET")
 	/* a.Router.HandleFunc("/teams", a.TeamData).Methods("GET") */
 }

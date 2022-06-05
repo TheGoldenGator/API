@@ -15,3 +15,12 @@ func GetRFCTimestamp() string {
 	rfc := now.Format(time.RFC3339)
 	return rfc
 }
+
+func StringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}

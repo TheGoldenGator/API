@@ -10,10 +10,12 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/Mahcks/TheGoldenGator/configure"
 	"github.com/Mahcks/TheGoldenGator/queries"
 	"github.com/Mahcks/TheGoldenGator/twitch"
+	"github.com/Mahcks/TheGoldenGator/websocket"
 )
 
 // Verify message from EventSub
@@ -99,5 +101,18 @@ func (a *App) EventsubRecievedNotification(w http.ResponseWriter, r *http.Reques
 		if errDb != nil {
 			panic(err.Error())
 		}
+
+	case eventType == "channel.channel_points_custom_reward_redemption.add":
+		var redemption twitch.EventSubChannelPointRewardRedemption
+		err := json.NewDecoder(bytes.NewReader(vals.Event)).Decode(&redemption)
+		if err != nil {
+			panic(err.Error())
+		}
+
+		payload, err := json.Marshal(redemption)
+		if err != nil {
+			return
+		}
+		websocket.PublishEvent(strings.ToLower(redemption.BroadcasterUserLogin), "channel.channel_points_custom_reward_redemption.add", string(payload))
 	}
 }

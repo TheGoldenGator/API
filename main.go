@@ -2,13 +2,10 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/Mahcks/TheGoldenGator/api"
 	"github.com/Mahcks/TheGoldenGator/configure"
 	"github.com/Mahcks/TheGoldenGator/database"
-	"github.com/Mahcks/TheGoldenGator/queries"
-	"github.com/go-co-op/gocron"
 
 	_ "github.com/Mahcks/TheGoldenGator/docs"
 )
@@ -31,7 +28,7 @@ func main() {
 		fmt.Println("error connecting to database: ", err)
 	}
 
-	s := gocron.NewScheduler(time.UTC)
+	/* s := gocron.NewScheduler(time.UTC)
 	s.Every(5).Minutes().Do(func() {
 		err := queries.ViewCountPoll()
 		if err != nil {
@@ -51,7 +48,7 @@ func main() {
 		fmt.Println("Updated stream statuses")
 	})
 
-	s.StartAsync()
+	s.StartAsync() */
 	a := api.App{}
 	a.Initialize()
 	a.Run(":7500")

@@ -7,6 +7,16 @@ type ManyUsers struct {
 	Users []User `json:"data"`
 }
 
+// Authenticated users
+type AuthUser struct {
+	Login        string   `json:"login" bson:"login"`
+	ID           string   `json:"id" bson:"id"`
+	Email        string   `json:"email" bson:"email"`
+	Scopes       []string `json:"scopes" bson:"scopes"`
+	AccessToken  string   `json:"access_token" bson:"access_token"`
+	RefreshToken string   `json:"refresh_token" bson:"refresh_token"`
+}
+
 // User represents a Twitch User
 type User struct {
 	ID              string    `json:"id" example:"237509153"`
@@ -125,6 +135,30 @@ type EventSubChannelUpdateEvent struct {
 	CategoryID           string `json:"category_id"`
 	CategoryName         string `json:"category_name"`
 	IsMature             bool   `json:"is_mature"`
+}
+
+type ManyChannelPointRewardRedemptions struct {
+	Data []EventSubChannelPointRewardRedemption `json:"data"`
+}
+
+type EventSubChannelPointRewardRedemption struct {
+	ID                   string             `json:"id"`
+	BroadcasterUserID    string             `json:"broadcaster_user_id"`
+	BroadcasterUserLogin string             `json:"broadcaster_user_login"`
+	BroadcasterUserName  string             `json:"broadcaster_user_name"`
+	UserID               string             `json:"user_id"`
+	UserLogin            string             `json:"user_login"`
+	UserInput            string             `json:"user_input"`
+	Status               string             `json:"status"`
+	Reward               ChannelPointReward `json:"reward"`
+	RedeemedAt           time.Time          `json:"redeemed_at"`
+}
+
+type ChannelPointReward struct {
+	ID     string `json:"id"`
+	Title  string `json:"title"`
+	Cost   int    `json:"cost"`
+	Prompt string `json:"prompt"`
 }
 
 /* Streams */

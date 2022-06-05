@@ -85,16 +85,16 @@ func (a *App) NotFound(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) Test(w http.ResponseWriter, r *http.Request) {
 	//err := database.EventSubscribe()
-	data, err := queries.CreateStream()
+	// data, err := queries.CreateStream()
 	//test, err := database.GetStreamerLinks(277057209)
 	//data := database.SortTeamMembers()
 
 	//data, err := queries.UpdateViewCount()
 
-	if err != nil {
+	/* if err != nil {
 		RespondWithError(w, r, http.StatusBadRequest, err.Error())
 		return
-	}
+	} */
 
-	RespondWithJSON(w, r, http.StatusOK, data)
+	RespondWithJSON(w, r, http.StatusOK, "OK")
 }

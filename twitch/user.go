@@ -59,3 +59,27 @@ func GetStreamInfo(user User) (*ManyStreams, error) {
 
 	return &streamInfo, nil
 }
+
+// Used for Twitch authentication.
+// When you send a request with just access token and no endpoint, it'll fetch the data for the access token provided.
+func GetTwitchUserByToken(token string) (*ManyUsers, error) {
+	req, _ := http.NewRequest("GET", "https://api.twitch.tv/helix/users", nil)
+	req.Header.Add("Authorization", "Bearer "+token)
+	req.Header.Add("Client-Id", configure.Config.GetString("twitch_client_id"))
+
+	c := httpClient()
+	response, err := c.Do(req)
+	if err != nil {
+		fmt.Println("Error when sending request to the server")
+		return nil, err
+	}
+
+	defer response.Body.Close()
+	body, _ := ioutil.ReadAll(response.Body)
+	userInfo := ManyUsers{}
+	if err := json.Unmarshal(body, &userInfo); err != nil {
+		return nil, err
+	}
+
+	return &userInfo, nil
+}

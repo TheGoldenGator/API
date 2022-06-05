@@ -12,10 +12,12 @@ import (
 )
 
 var (
-	MDB    *mongo.Client
-	RDB    *redis.Client
-	Stream *mongo.Collection
-	Users  *mongo.Collection
+	MDB       *mongo.Client
+	RDB       *redis.Client
+	Stream    *mongo.Collection
+	Users     *mongo.Collection
+	AuthUsers *mongo.Collection
+	APIKeys   *mongo.Collection
 )
 
 func Connect(mongoURI string) error {
@@ -38,6 +40,8 @@ func Connect(mongoURI string) error {
 	ggdb := MDB.Database("golden_gator")
 	Stream = ggdb.Collection("streams")
 	Users = ggdb.Collection("users")
+	AuthUsers = ggdb.Collection("auth_users")
+	APIKeys = ggdb.Collection("keys")
 
 	// Redis Connection
 	if configure.Config.GetString("environment") == "dev" {
