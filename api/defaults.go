@@ -43,22 +43,11 @@ func (a *App) Home(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} twitch.PublicStream
 // @Router /streams [get]
 func (a *App) Streams(w http.ResponseWriter, r *http.Request) {
-	statusP := r.URL.Query().Get("status")
-	sortP := r.URL.Query().Get("sort")
-
-	if statusP == "online" || statusP == "offline" {
-		streams, err := queries.GetStreams(statusP, sortP)
-		if err != nil {
-			RespondWithError(w, r, http.StatusBadRequest, err.Error())
-		}
-		RespondWithJSON(w, r, http.StatusOK, streams)
-	} else {
-		streams, err := queries.GetStreams("all", "all")
-		if err != nil {
-			RespondWithError(w, r, http.StatusBadRequest, err.Error())
-		}
-		RespondWithJSON(w, r, http.StatusOK, streams)
+	streams, pagination, err := queries.GetStreams(r)
+	if err != nil {
+		RespondWithError(w, r, http.StatusBadRequest, err.Error())
 	}
+	RespondWithJSONPagnation(w, r, http.StatusOK, streams, pagination)
 }
 
 // Fetches all streamers
@@ -69,13 +58,14 @@ func (a *App) Streams(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Success 200 {array} twitch.Streamer
 // @Router /streamers [get]
-func (a *App) Users(w http.ResponseWriter, r *http.Request) {
-	users, err := queries.GetStreamers()
+func (a *App) Members(w http.ResponseWriter, r *http.Request) {
+	members, footer, err := queries.GetStreamers(r)
 	if err != nil {
 		RespondWithError(w, r, http.StatusBadRequest, err.Error())
+		return
 	}
 
-	RespondWithJSON(w, r, http.StatusOK, users)
+	RespondWithJSONPagnation(w, r, http.StatusOK, members, footer)
 }
 
 // If route doesn't exist then this will be called.
@@ -85,16 +75,16 @@ func (a *App) NotFound(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) Test(w http.ResponseWriter, r *http.Request) {
 	//err := database.EventSubscribe()
-	data, err := queries.CreateStream()
+	//data, err := queries.CreateStream()
 	//test, err := database.GetStreamerLinks(277057209)
 	//data := database.SortTeamMembers()
-
 	//data, err := queries.UpdateViewCount()
+	err := queries.UpdateStreamerLinks()
 
 	if err != nil {
 		RespondWithError(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	RespondWithJSON(w, r, http.StatusOK, data)
+	RespondWithJSON(w, r, http.StatusOK, "Updated")
 }

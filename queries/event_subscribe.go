@@ -26,8 +26,8 @@ type EventSubCreateTransport struct {
 	Secret   string `json:"secret"`
 }
 
-func EventSubscribe() error {
-	users, err := GetStreamers()
+func EventSubscribe(r *http.Request) error {
+	users, _, err := GetStreamers(r)
 	if err != nil {
 		return err
 	}

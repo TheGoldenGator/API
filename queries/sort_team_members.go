@@ -20,8 +20,8 @@ func SortTeamMembers() error {
 	t := tData.Data[0]
 	for i := 0; i < len(t.Users); i++ {
 		// Check if the streamer is in members or not yet.
-		var search twitch.Streamer
-		if err := database.Users.FindOne(context.Background(), bson.M{"id": t.Users[i].UserID}).Decode(&search); err != nil {
+		var search twitch.Member
+		if err := database.Members.FindOne(context.Background(), bson.M{"id": t.Users[i].UserID}).Decode(&search); err != nil {
 			if err.Error() == "mongo: no documents in result" {
 				// Gets Twitch user data to get the PFP
 				twitchUser, err := twitch.GetTwitchUser(t.Users[i].UserID)
@@ -29,21 +29,23 @@ func SortTeamMembers() error {
 					return err
 				}
 
-				toI := twitch.Streamer{
-					ID:              t.Users[i].UserID,
-					Login:           t.Users[i].UserLogin,
-					DisplayName:     t.Users[i].UserName,
-					ProfileImageUrl: twitchUser.Users[0].ProfileImageURL,
-					TwitchURL:       fmt.Sprintf("https://www.twitch.tv/%v", t.Users[i].UserLogin),
-					InstagramURL:    "N/A",
-					RedditURL:       "N/A",
-					TwitterURL:      "N/A",
-					DiscordURL:      "N/A",
-					YouTubeURL:      "N/A",
-					TikTokURL:       "N/A",
+				toI := twitch.Member{
+					ID:               t.Users[i].UserID,
+					Login:            t.Users[i].UserLogin,
+					DisplayName:      t.Users[i].UserName,
+					ProfileImageUrl:  twitchUser.Users[0].ProfileImageURL,
+					Streams:          true,
+					TwitchURL:        fmt.Sprintf("https://www.twitch.tv/%v", t.Users[i].UserLogin),
+					VRChatLegendsURL: "N/A",
+					InstagramURL:     "N/A",
+					RedditURL:        "N/A",
+					TwitterURL:       "N/A",
+					DiscordURL:       "N/A",
+					YouTubeURL:       "N/A",
+					TikTokURL:        "N/A",
 				}
 
-				database.Users.InsertOne(context.Background(), toI)
+				database.Members.InsertOne(context.Background(), toI)
 			}
 		}
 	}

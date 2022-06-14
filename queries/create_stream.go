@@ -12,13 +12,13 @@ import (
 )
 
 // Creates a stream document for a streamer that doesn't exist
-func CreateStream() ([]twitch.Streamer, error) {
-	cursor, err := database.Users.Find(context.Background(), bson.M{})
+func CreateStream() ([]twitch.Member, error) {
+	cursor, err := database.Members.Find(context.Background(), bson.M{})
 	if err != nil {
 		return nil, err
 	}
 
-	var streamers []twitch.Streamer
+	var streamers []twitch.Member
 	if err = cursor.All(context.Background(), &streamers); err != nil {
 		return nil, err
 	}
@@ -65,6 +65,7 @@ func CreateStream() ([]twitch.Streamer, error) {
 						StreamThumbnailUrl:  fmt.Sprintf("https://static-cdn.jtvnw.net/previews-ttv/live_user_%s-{width}x{height}.jpg", uInfo.Login),
 						StreamStartedAt:     GetRFCTimestamp(),
 						TwitchURL:           streamerUrls.TwitchURL,
+						VRChatLegendsURL:    streamerUrls.VRChatLegendsURL,
 						RedditURL:           streamerUrls.RedditURL,
 						InstagramURL:        streamerUrls.InstagramURL,
 						TwitterURL:          streamerUrls.TwitterURL,
@@ -93,6 +94,7 @@ func CreateStream() ([]twitch.Streamer, error) {
 						StreamViewerCount:   viewerCountStr,
 						StreamThumbnailUrl:  fmt.Sprintf("https://static-cdn.jtvnw.net/previews-ttv/live_user_%s-{width}x{height}.jpg", uInfo.Login),
 						StreamStartedAt:     streamData.Streams[0].StartedAt.Format(time.RFC3339),
+						VRChatLegendsURL:    streamerUrls.VRChatLegendsURL,
 						TwitchURL:           streamerUrls.TwitchURL,
 						RedditURL:           streamerUrls.RedditURL,
 						InstagramURL:        streamerUrls.InstagramURL,

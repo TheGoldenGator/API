@@ -26,6 +26,13 @@ type ResponseBody struct {
 	Data       interface{} `json:"data"`
 }
 
+type ResponseBodyPagination struct {
+	StatusCode int         `json:"status_code"`
+	Timestamp  int         `json:"timestamp"`
+	Data       interface{} `json:"data"`
+	Pagination interface{} `json:"pagination"`
+}
+
 type ResponseBodyError struct {
 	StatusCode int    `json:"status_code"`
 	Timestamp  int    `json:"timestamp"`
@@ -94,16 +101,36 @@ func RespondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload i
 	return
 }
 
+func RespondWithJSONPagnation(w http.ResponseWriter, r *http.Request, code int, payload interface{}, pagination interface{}) (err error) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+
+	responseBody := &ResponseBodyPagination{
+		StatusCode: code,
+		Timestamp:  int(time.Now().Unix()),
+		Data:       payload,
+		Pagination: pagination,
+	}
+
+	buf, err := json.Marshal(responseBody)
+	if err != nil {
+		return err
+	}
+
+	w.Write(buf)
+	return
+}
+
 func (a *App) initializeRoutes() {
 	a.Router.NotFoundHandler = http.HandlerFunc(a.NotFound)
 
 	/* REST ROUTES */
 	a.Router.HandleFunc("/", a.Home).Methods("GET")
 	a.Router.HandleFunc("/streams", a.Streams).Methods("GET")
-	a.Router.HandleFunc("/streamers", a.Users).Methods("GET")
+	a.Router.HandleFunc("/members", a.Members).Methods("GET")
 	a.Router.HandleFunc("/eventsub", a.EventsubRecievedNotification).Methods("POST")
 	a.Router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 
-	//a.Router.HandleFunc("/test", a.Test).Methods("GET")
+	a.Router.HandleFunc("/test", a.Test).Methods("GET")
 	/* a.Router.HandleFunc("/teams", a.TeamData).Methods("GET") */
 }

@@ -22,28 +22,31 @@ type User struct {
 	CreatedAt       time.Time `json:"created_at" example:"2018-07-10T02:16:03Z"`
 }
 
-type Streamer struct {
-	ID              string `json:"id" bson:"id" example:"11897156"`
-	Login           string `json:"login" bson:"login" example:"roflgator"`
-	DisplayName     string `json:"display_name" bson:"display_name" example:"roflgator"`
-	ProfileImageUrl string `json:"profile_image_url" bson:"profile_image_url" example:"https://static-cdn.jtvnw.net/jtv_user_pictures/2e24ced1-fec5-4cd8-858f-130f798fa023-profile_image-600x600.png"`
-	TwitchURL       string `json:"twitch" bson:"twitch" example:"https://www.twitch.tv/roflgator"`
-	RedditURL       string `json:"reddit" bson:"reddit" example:""`
-	InstagramURL    string `json:"instagram" bson:"instagram" example:""`
-	TwitterURL      string `json:"twitter" bson:"twitter" example:"https://twitter.com/roflgatorow"`
-	DiscordURL      string `json:"discord" bson:"discord" example:""`
-	YouTubeURL      string `json:"youtube" bson:"youtube" example:"https://www.youtube.com/channel/UCrIz-xXkVr0PSUdY4e7p-8w"`
-	TikTokURL       string `json:"tiktok" bson:"tiktok" example:""`
+type Member struct {
+	ID               string `json:"id" bson:"id" example:"11897156"`
+	Login            string `json:"login" bson:"login" example:"roflgator"`
+	DisplayName      string `json:"display_name" bson:"display_name" example:"roflgator"`
+	ProfileImageUrl  string `json:"profile_image_url" bson:"profile_image_url" example:"https://static-cdn.jtvnw.net/jtv_user_pictures/2e24ced1-fec5-4cd8-858f-130f798fa023-profile_image-600x600.png"`
+	Streams          bool   `json:"streams" bson:"streams" example:"true"`
+	TwitchURL        string `json:"twitch" bson:"twitch" example:"https://www.twitch.tv/roflgator"`
+	VRChatLegendsURL string `json:"vrchat_legends" bson:"vrchat_legends" example:"https://vrchat-legends.fandom.com/wiki/Roflgator"`
+	RedditURL        string `json:"reddit" bson:"reddit" example:""`
+	InstagramURL     string `json:"instagram" bson:"instagram" example:""`
+	TwitterURL       string `json:"twitter" bson:"twitter" example:"https://twitter.com/roflgatorow"`
+	DiscordURL       string `json:"discord" bson:"discord" example:""`
+	YouTubeURL       string `json:"youtube" bson:"youtube" example:"https://www.youtube.com/channel/UCrIz-xXkVr0PSUdY4e7p-8w"`
+	TikTokURL        string `json:"tiktok" bson:"tiktok" example:""`
 }
 
 type StreamerURLs struct {
-	TwitchURL    string `json:"twitch" bson:"twitch" example:"https://www.twitch.tv/roflgator"`
-	RedditURL    string `json:"reddit" bson:"reddit" example:""`
-	InstagramURL string `json:"instagram" bson:"instagram" example:""`
-	TwitterURL   string `json:"twitter" bson:"twitter" example:"https://twitter.com/roflgatorow"`
-	DiscordURL   string `json:"discord" bson:"discord" example:""`
-	YouTubeURL   string `json:"youtube" bson:"youtube" example:"https://www.youtube.com/channel/UCrIz-xXkVr0PSUdY4e7p-8w"`
-	TikTokURL    string `json:"tiktok" bson:"tiktok" example:""`
+	TwitchURL        string `json:"twitch" bson:"twitch" example:"https://www.twitch.tv/roflgator"`
+	VRChatLegendsURL string `json:"vrchat_legends" bson:"vrchat_legends"`
+	RedditURL        string `json:"reddit" bson:"reddit" example:""`
+	InstagramURL     string `json:"instagram" bson:"instagram" example:""`
+	TwitterURL       string `json:"twitter" bson:"twitter" example:"https://twitter.com/roflgatorow"`
+	DiscordURL       string `json:"discord" bson:"discord" example:""`
+	YouTubeURL       string `json:"youtube" bson:"youtube" example:"https://www.youtube.com/channel/UCrIz-xXkVr0PSUdY4e7p-8w"`
+	TikTokURL        string `json:"tiktok" bson:"tiktok" example:""`
 }
 
 type PublicStream struct {
@@ -60,6 +63,7 @@ type PublicStream struct {
 	StreamThumbnailUrl  string `json:"stream_thumbnail_url" bson:"stream_thumbnail_url" example:"https://static-cdn.jtvnw.net/previews-ttv/live_user_roflgator-{width}x{height}.jpg"`
 	StreamStartedAt     string `json:"stream_started_at" bson:"stream_started_at" example:""`
 	TwitchURL           string `json:"twitch" bson:"twitch" example:"https://www.twitch.tv/roflgator"`
+	VRChatLegendsURL    string `json:"vrchat_legends" bson:"vrchat_legends"`
 	RedditURL           string `json:"reddit" bson:"reddit" example:""`
 	InstagramURL        string `json:"instagram" bson:"instagram" example:""`
 	TwitterURL          string `json:"twitter" bson:"twitter" example:"https://twitter.com/roflgatorow"`
